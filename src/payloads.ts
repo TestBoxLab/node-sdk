@@ -45,7 +45,7 @@ export function isTestBoxTrialRequest(
 }
 
 // TODO: want to automatically generate these interfaces from schemas
-type Dict = { [x: string]: string | number | Dict | boolean };
+export type Dict = { [x: string]: string | number | Dict | boolean };
 
 export interface User<T = Dict> {
   email: string;

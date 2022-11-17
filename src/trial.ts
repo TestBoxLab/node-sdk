@@ -1,12 +1,12 @@
-import { AdminAuthentication, ITestBoxTrial } from "./payloads";
+import { TestBoxError } from "./error";
+import { AdminAuthentication, Dict, ITestBoxTrial, SecretContext, User } from "./payloads";
 
 export default class Trial implements ITestBoxTrial {
-  start_url_context = undefined;
-  secret_context = undefined;
-  trial_users = [];
+  start_url_context: Dict | undefined = undefined;
+  secret_context: SecretContext | undefined = undefined;
+  trial_users: User[] = [];
   created_at = new Date();
   admin_authentication: AdminAuthentication | undefined = undefined;
-  private admin_auth: Partial<AdminAuthentication>;
 
   setEmail(email: string): Trial {
     if (this.admin_authentication) {
@@ -25,12 +25,29 @@ export default class Trial implements ITestBoxTrial {
     if (this.admin_authentication) {
       this.admin_authentication.user.password = password;
     } else {
-      this.admin_authentication = {
-        user: {
-          password,
-        },
-      };
+        throw new TestBoxError("Please set an email before setting a password.")
     }
+    return this;
+  }
+
+  setSubdomain(subdomain: string): Trial {
+    this.start_url_context = {
+        ...this.start_url_context,
+        subdomain,
+    }
+    return this;
+  }
+
+  setJwtSecret(jwtSecret: string): Trial {
+    this.secret_context = {
+        ...this.secret_context,
+        sso_jwt_secret: jwtSecret,
+    };
+    return this;
+  }
+
+  addUser(user: User): Trial {
+    this.trial_users.push(user);
     return this;
   }
 }
