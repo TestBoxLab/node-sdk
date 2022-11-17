@@ -1,5 +1,14 @@
 import { TestBoxError } from "./error";
-import { AdminAuthentication, Dict, ITestBoxTrial, SecretContext, User } from "./payloads";
+import {
+  AdminAuthentication,
+  Dict,
+  isAdminAuthentication,
+  isSecretContext,
+  isUser,
+  ITestBoxTrial,
+  SecretContext,
+  User,
+} from "./payloads";
 
 export default class Trial implements ITestBoxTrial {
   start_url_context: Dict | undefined = undefined;
@@ -25,23 +34,23 @@ export default class Trial implements ITestBoxTrial {
     if (this.admin_authentication) {
       this.admin_authentication.user.password = password;
     } else {
-        throw new TestBoxError("Please set an email before setting a password.")
+      throw new TestBoxError("Please set an email before setting a password.");
     }
     return this;
   }
 
   setSubdomain(subdomain: string): Trial {
     this.start_url_context = {
-        ...this.start_url_context,
-        subdomain,
-    }
+      ...this.start_url_context,
+      subdomain,
+    };
     return this;
   }
 
   setJwtSecret(jwtSecret: string): Trial {
     this.secret_context = {
-        ...this.secret_context,
-        sso_jwt_secret: jwtSecret,
+      ...this.secret_context,
+      sso_jwt_secret: jwtSecret,
     };
     return this;
   }
@@ -49,5 +58,13 @@ export default class Trial implements ITestBoxTrial {
   addUser(user: User): Trial {
     this.trial_users.push(user);
     return this;
+  }
+
+  validate(): boolean {
+    return (
+      isAdminAuthentication(this.admin_authentication) &&
+      isSecretContext(this.secret_context) &&
+      this.trial_users.every((x) => isUser(x))
+    );
   }
 }
