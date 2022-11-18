@@ -24,9 +24,6 @@ export async function verifyAuthenticationToken(
   if (!publicKey) {
     return false;
   }
-  const results = await jose.jwtVerify(
-    token,
-    new TextEncoder().encode(publicKey)
-  );
+  const results = await jose.jwtVerify(token, Buffer.from(publicKey, "utf-8"));
   return results.payload.trial_id == trialId;
 }
