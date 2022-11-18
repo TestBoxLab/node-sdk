@@ -1,6 +1,9 @@
-<img src="./docs/pedals.svg" width="250" />
+<img src="./docs/pedals.svg" width="125" />
 
 # TestBox Node.js SDK
+
+[![Test, build, publish](https://github.com/TestBoxLab/node-sdk/actions/workflows/build.yml/badge.svg)](https://github.com/TestBoxLab/node-sdk/actions/workflows/build.yml)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ## Installation
 
