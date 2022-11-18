@@ -1,22 +1,26 @@
 import axios from "axios";
-import jose from "jose";
+import * as jose from "jose";
 
 // On application start, cache the TestBox public keys
 let publicKeys: Record<string, string> | undefined;
 
-(async () => {
+async function loadPublicKeys() {
   const domain = process.env.TBX_DOMAIN || "trials.testbox.com";
   const keys = await axios.get<Record<string, string>>(
     `https://${domain}/.well-known/keys`
   );
   publicKeys = keys.data;
-})();
+}
 
 export async function verifyAuthenticationToken(
   token: string,
-  trialId: string
+  trialId: string,
+  audienceClaim: string
 ): Promise<boolean> {
-  const kid = jose.UnsecuredJWT.decode(token).header.kid;
+  if (!publicKeys) {
+    await loadPublicKeys();
+  }
+  const kid = jose.decodeProtectedHeader(token).kid;
   if (!kid || !publicKeys) {
     return false;
   }
@@ -24,6 +28,14 @@ export async function verifyAuthenticationToken(
   if (!publicKey) {
     return false;
   }
-  const results = await jose.jwtVerify(token, Buffer.from(publicKey, "utf-8"));
-  return results.payload.trial_id == trialId;
+  try {
+    const importedKey = await jose.importSPKI(publicKey, "RS256");
+    const results = await jose.jwtVerify(token, importedKey, {
+      audience: audienceClaim,
+    });
+    return results.payload.trial_id == trialId;
+  } catch (exc) {
+    // TODO: logging
+    return false;
+  }
 }

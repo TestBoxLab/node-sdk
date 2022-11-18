@@ -30,8 +30,15 @@ export default class TestBoxTrialRequest implements ITestBoxTrialRequest {
     }
   }
 
-  async verifyToken(authToken: string): Promise<boolean> {
-    const results = await verifyAuthenticationToken(authToken, this.trial_id);
+  async verifyToken(
+    authToken: string,
+    audienceClaim: string
+  ): Promise<boolean> {
+    const results = await verifyAuthenticationToken(
+      authToken,
+      this.trial_id,
+      audienceClaim
+    );
     if (results) {
       this.hasVerifiedAuth = true;
       this.authToken = authToken;
