@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as jose from "jose";
 
-// On application start, cache the TestBox public keys
 let publicKeys: Record<string, string> | undefined;
 
 async function loadPublicKeys() {

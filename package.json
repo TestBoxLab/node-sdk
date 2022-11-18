@@ -2,12 +2,19 @@
   "name": "@testboxlab/node-sdk",
   "version": "0.0.0",
   "description": "A Node.js helper library to integrate products into TestBox",
-  "main": "index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "./lib"
+  ],
   "scripts": {
     "format": "prettier --write src/ test/",
     "format:check": "prettier --check src/ test/",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "tsc",
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",
