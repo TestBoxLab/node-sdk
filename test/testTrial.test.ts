@@ -38,3 +38,19 @@ test("validation does pass when things are good", () => {
     .addUser({ email: "hello@world.com" });
   expect(trial.validate()).toBeTruthy();
 });
+
+test("toJSON works as expected", () => {
+  const trial = new TestBoxTrial()
+    .setEmail("hello@world.com")
+    .addUser({ email: "dev@testbox.com" });
+
+  expect(JSON.parse(JSON.stringify(trial))).toStrictEqual({
+    admin_authentication: {
+      user: {
+        email: "hello@world.com",
+      },
+    },
+    trial_users: [{ email: "dev@testbox.com" }],
+    created_at: trial.created_at.toISOString(),
+  });
+});
