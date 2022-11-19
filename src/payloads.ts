@@ -154,18 +154,36 @@ export function isAdminAuthentication<AdminExtras, UserExtras>(
   return true;
 }
 
+/**
+ * {@inheritDoc TestBoxTrial}
+ */
 export interface ITestBoxTrial<
   StartUrlContext = Dict,
   SecretExtras = Dict,
   AdminExtras = Dict,
   UserExtras = Dict
 > {
+  /**
+   * {@inheritDoc TestBoxTrial.start_url_context}
+   */
   start_url_context?: StartUrlContext | undefined;
+  /**
+   * {@inheritDoc TestBoxTrial.secret_context}
+   */
   secret_context?: SecretContext<SecretExtras> | undefined;
+  /**
+   * {@inheritDoc TestBoxTrial.admin_authentication}
+   */
   admin_authentication:
     | AdminAuthentication<AdminExtras, UserExtras>
     | undefined;
+  /**
+   * {@inheritDoc TestBoxTrial.trial_users}
+   */
   trial_users: User<UserExtras>[];
+  /**
+   * {@inheritDoc TestBoxTrial.created_at}
+   */
   created_at: Date;
 }
 

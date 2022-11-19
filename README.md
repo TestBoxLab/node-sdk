@@ -1,4 +1,4 @@
-<img src="./docs/pedals.svg" width="125" />
+<img src="./assets/pedals.svg" width="125" />
 
 # TestBox Node.js SDK
 
