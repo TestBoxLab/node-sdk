@@ -48,7 +48,7 @@ export default class TestBoxTrial<
     }
   }
 
-  setEmail(email: string): typeof this {
+  setEmail(email: string) {
     if (this.admin_authentication) {
       this.admin_authentication.user.email = email;
     } else {
@@ -61,7 +61,7 @@ export default class TestBoxTrial<
     return this;
   }
 
-  setPassword(password: string): typeof this {
+  setPassword(password: string) {
     if (this.admin_authentication) {
       this.admin_authentication.user.password = password;
     } else {
@@ -70,7 +70,7 @@ export default class TestBoxTrial<
     return this;
   }
 
-  setSubdomain(subdomain: string): typeof this {
+  setSubdomain(subdomain: string) {
     this.start_url_context = {
       ...this.start_url_context,
       subdomain,
@@ -78,7 +78,7 @@ export default class TestBoxTrial<
     return this;
   }
 
-  setStartUrlValue(key: string, value: string): typeof this {
+  setStartUrlValue(key: string, value: string) {
     this.start_url_context = {
       ...this.start_url_context,
       [key]: value,
@@ -86,7 +86,7 @@ export default class TestBoxTrial<
     return this;
   }
 
-  setJwtSecret(jwtSecret: string): typeof this {
+  setJwtSecret(jwtSecret: string) {
     this.secret_context = {
       ...this.secret_context,
       sso_jwt_secret: jwtSecret,
@@ -94,7 +94,7 @@ export default class TestBoxTrial<
     return this;
   }
 
-  addUser(user: User<ExtraUserType>): typeof this {
+  addUser(user: User<ExtraUserType>) {
     this.trial_users.push(user);
     return this;
   }
