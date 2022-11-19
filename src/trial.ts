@@ -94,6 +94,14 @@ export default class TestBoxTrial<
     return this;
   }
 
+  setApiKey(apiKey: string) {
+    this.admin_authentication = {
+      ...this.admin_authentication,
+      api_token: apiKey,
+    };
+    return this;
+  }
+
   addUser(user: User<ExtraUserType>) {
     this.trial_users.push(user);
     return this;
