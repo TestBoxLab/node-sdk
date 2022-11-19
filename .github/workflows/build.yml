@@ -8,6 +8,12 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "build"
+  cancel-in-progress: true
 
 jobs:
   install-dependencies:
@@ -98,6 +104,35 @@ jobs:
      - name: Run unit tests
        run: npm run test
 
+  publish-pages:
+    needs: [install-dependencies]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.0
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ needs.install-dependencies.outputs.cache-key }}
+      - name: Build documentation
+        run: npm run build:docs
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './docs/'
+      - name: Deploy to GitHub pages
+        id: deployment
+        uses: actions/deploy-pages@v1
   # publish:
   #   name: Publish to npm
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'

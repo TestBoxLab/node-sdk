@@ -3,5 +3,6 @@
     "entryPoints": ["src/index.ts"],
     "out": "docs",
     "name": "TestBox Node SDK",
-    "includes": "./assets"
+    "includes": "./assets",
+    "githubPages": true
 }
