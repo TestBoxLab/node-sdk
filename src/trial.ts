@@ -10,14 +10,45 @@ import {
   User,
 } from "./payloads";
 
-export default class TestBoxTrial implements ITestBoxTrial {
-  start_url_context: Dict | undefined = undefined;
-  secret_context: SecretContext | undefined = undefined;
-  trial_users: User[] = [];
+export default class TestBoxTrial<
+  StartUrlType = Dict,
+  ExtraSecretContextType = Dict,
+  ExtraAdminType = Dict,
+  ExtraUserType = Dict
+> implements
+    ITestBoxTrial<
+      StartUrlType,
+      ExtraSecretContextType,
+      ExtraAdminType,
+      ExtraUserType
+    >
+{
+  start_url_context: StartUrlType | undefined = undefined;
+  secret_context: SecretContext<ExtraSecretContextType> | undefined = undefined;
+  trial_users: User<ExtraUserType>[] = [];
   created_at = new Date();
-  admin_authentication: AdminAuthentication | undefined = undefined;
+  admin_authentication:
+    | AdminAuthentication<ExtraAdminType, ExtraUserType>
+    | undefined = undefined;
 
-  setEmail(email: string): TestBoxTrial {
+  constructor(
+    baseValues?: ITestBoxTrial<
+      StartUrlType,
+      ExtraSecretContextType,
+      ExtraAdminType,
+      ExtraUserType
+    >
+  ) {
+    if (baseValues) {
+      this.start_url_context = baseValues.start_url_context;
+      this.secret_context = baseValues.secret_context;
+      this.trial_users = baseValues.trial_users;
+      this.created_at = baseValues.created_at;
+      this.admin_authentication = baseValues.admin_authentication;
+    }
+  }
+
+  setEmail(email: string): typeof this {
     if (this.admin_authentication) {
       this.admin_authentication.user.email = email;
     } else {
@@ -30,7 +61,7 @@ export default class TestBoxTrial implements ITestBoxTrial {
     return this;
   }
 
-  setPassword(password: string): TestBoxTrial {
+  setPassword(password: string): typeof this {
     if (this.admin_authentication) {
       this.admin_authentication.user.password = password;
     } else {
@@ -39,7 +70,7 @@ export default class TestBoxTrial implements ITestBoxTrial {
     return this;
   }
 
-  setSubdomain(subdomain: string): TestBoxTrial {
+  setSubdomain(subdomain: string): typeof this {
     this.start_url_context = {
       ...this.start_url_context,
       subdomain,
@@ -47,7 +78,15 @@ export default class TestBoxTrial implements ITestBoxTrial {
     return this;
   }
 
-  setJwtSecret(jwtSecret: string): TestBoxTrial {
+  setStartUrlValue(key: string, value: string): typeof this {
+    this.start_url_context = {
+      ...this.start_url_context,
+      [key]: value,
+    };
+    return this;
+  }
+
+  setJwtSecret(jwtSecret: string): typeof this {
     this.secret_context = {
       ...this.secret_context,
       sso_jwt_secret: jwtSecret,
@@ -55,7 +94,7 @@ export default class TestBoxTrial implements ITestBoxTrial {
     return this;
   }
 
-  addUser(user: User): TestBoxTrial {
+  addUser(user: User<ExtraUserType>): typeof this {
     this.trial_users.push(user);
     return this;
   }
