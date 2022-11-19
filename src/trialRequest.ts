@@ -19,7 +19,9 @@ export default class TestBoxTrialRequest implements ITestBoxTrialRequest {
   private authToken: string;
 
   constructor(payload: ITestBoxTrialRequest) {
-    // TODO: authentication from TMS
+    // The constructor only checks that the contract between the SDK and TestBox
+    // is being upheld. It does not check for authorization/authentication,
+    // as this is done async.
     if (isTestBoxTrialRequest(payload)) {
       this.version = payload.version;
       this.failure_url = payload.failure_url;
