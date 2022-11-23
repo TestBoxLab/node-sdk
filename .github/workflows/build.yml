@@ -105,6 +105,7 @@ jobs:
        run: npm run test
 
   publish-pages:
+    name: Publish documentation to GitHub Pages
     needs: [install-dependencies]
     environment:
       name: github-pages
