@@ -210,6 +210,11 @@ export default class TestBoxTrial<
    * @returns An updated TestBoxTrial
    */
   addUser(user: User<ExtraUserType>) {
+    if (!isUser(user)) {
+      throw new TestBoxError(
+        "Attempted to add a user that wasn't a valid user"
+      );
+    }
     this.trial_users.push(user);
     return this;
   }
