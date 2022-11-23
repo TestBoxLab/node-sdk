@@ -3,6 +3,7 @@ import TestBoxTrialRequest from "./trialRequest";
 import { configureTestBox, TestBoxConfig } from "./config";
 import { SecretContext, AdminAuthentication } from "./payloads";
 import { ITestBoxTrial, ITestBoxTrialRequest, User } from "./payloads";
+import { on } from "./sockets";
 
 export {
   TestBoxTrial,
@@ -14,4 +15,5 @@ export {
   ITestBoxTrial,
   ITestBoxTrialRequest,
   User as TestBoxUser,
+  on,
 };

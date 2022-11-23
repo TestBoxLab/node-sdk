@@ -5,7 +5,7 @@ import {
 } from "./payloads";
 import axios from "axios";
 import { TestBoxError } from "./error";
-import { verifyAuthenticationToken } from "./auth";
+import { verifyAuthenticationToken } from "./webhooks/auth";
 import { Request, Response } from "express";
 import { getConfigItem } from "./config";
 

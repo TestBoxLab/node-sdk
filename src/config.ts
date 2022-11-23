@@ -1,5 +1,7 @@
 export interface TestBoxConfig {
   productId: string;
+  webSocketUrl?: string;
+  websocketReconnectInterval?: number;
 }
 
 let _testboxConfig = undefined;
