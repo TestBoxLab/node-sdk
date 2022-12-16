@@ -106,6 +106,62 @@ app.post("/api/testbox/trial", async (req, res) => {
 });
 ```
 
+## Setup use cases
+
+```typescript
+import { TestBoxUseCaseRequest, TestBoxTrial } from "@testboxlab/node-sdk";
+
+const app = express();
+
+// You can use the single use-case call to return a URL
+// for a specific use-case synchronously
+app.post("/api/testbox/use-case", async (req, res) => {
+    const useCaseRequest = new TestBoxUseCaseRequest(req.body);
+    
+    const tokenVerified = await useCaseRequest.verifyToken(req.headers["authorization"]);
+    if (!tokenVerified) {
+        // The token verification failed, meaning someone is trying to pretend to be
+        // TestBox! Do not process their request.
+        return res.status(401);
+    }
+
+    // You may now safely retrieve a URL for the requested use case
+    const myUseCaseUrl = myUseCaseUrlRetrieveFunction(useCaseRequest)
+
+    // Once we have finished build the URL for the use case, we need
+    // to fulfill the request. For singular use case we always expect 
+    // a 201 status code sync response.
+    useCaseRequest.express.fulfill(myUseCaseUrl, res);
+});
+
+// You can use the bulk use-case call to return a URL for 
+// multiple use-cases at once asynchronously
+app.post("/api/testbox/use-case/bulk", async (req, res) => {
+    const useCaseRequest = new TestBoxBulkUseCaseRequest(req.body);
+    try {
+        const tokenVerified = await useCaseRequest.verifyToken(req.headers["authorization"]);
+        if (!tokenVerified) {
+            // The token verification failed, meaning someone is trying to pretend to be
+            // TestBox! Do not process their request.
+            return res.status(401);
+        }
+
+        // You may now safely retrieve a URL for the requested use case
+        const result = {}
+        for (const useCaseType in useCaseRequest.types) {
+            result[useCaseType] = myUseCaseUrlRetrieveFunction(useCaseRequest)
+        }
+
+        // Once we have finished build the URL for the use case, we need
+        // to fulfill the request. For bulk use case request, we always expect
+        // a async fulfill that you are creating the trial asynchronously.
+        useCaseRequest.fulfillAsync(result);
+    } catch(e) {
+        useCaseRequest.reportFailureToFulfill(e)
+    }
+});
+```
+
 ## Report bugs or security issues
 
 To report a bug, please feel free to open an issue on this repository.
