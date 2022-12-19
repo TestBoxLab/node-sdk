@@ -7,6 +7,7 @@ import axios from "axios";
 import { TestBoxError } from "./error";
 import { Request, Response } from "express";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
+import { FastifyReply } from "./fastify";
 
 export default class TestBoxTrialRequest extends TestBoxAuthenticatedRequest implements ITestBoxTrialRequest {
   version: 1;

@@ -8,6 +8,7 @@ import { TestBoxError } from "./error";
 import { Request, Response } from "express";
 import TestBoxTrial from "./trial";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
+import { FastifyReply } from "./fastify";
 
 export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest implements ITestBoxUseCaseRequest {
   version: 1;

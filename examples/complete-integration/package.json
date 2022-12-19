@@ -1,0 +1,23 @@
+{
+  "name": "complete-integration",
+  "version": "1.0.0",
+  "description": "A complete testbox integration app example",
+  "scripts": {
+    "start": "tsc && node dist/server",
+    "start:dev": "tsc-watch --onSuccess \"node dist/server\"",
+    "start:prod": "tsc && node dist/server",
+    "test": "jest --runInBand --silent"
+  },
+  "author": "Pedals <dev@testbox.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@testboxlab/node-sdk": "../..",
+    "express": "^4.18.2"
+  },
+  "bugs": {
+    "url": "https://github.com/TestBoxLab/node-sdk/issues"
+  },
+  "devDependencies": {
+    "tsc-watch": "^6.0.0"
+  }
+}

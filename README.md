@@ -59,7 +59,7 @@ import { TestBoxTrialRequest } from "@testboxlab/node-sdk";
 const app = express();
 
 app.post("/api/testbox/trial", (req, res) => {
-    const trialRequest = TestBoxTrialRequest.fromExpressRequest(req);
+    const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);
 
     // First, call your business logic to create an account/trial
 
@@ -102,7 +102,7 @@ app.post("/api/testbox/trial", async (req, res) => {
     // to fulfill the request. Whenever possible, respond to TestBox synchronously
     // using a 201 HTTP code. 200 HTTP codes will be ignored, as we will assume
     // that you are creating the trial asynchronously.
-    trialRequest.express.fulfill(trial, res);
+    trialRequest.express.fulfill(testboxTrial, res);
 });
 ```
 
