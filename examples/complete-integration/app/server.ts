@@ -1,10 +1,15 @@
 import express from "express";
 import {
+  configureTestBox,
   TestBoxBulkUseCaseRequest,
   TestBoxTrial,
   TestBoxTrialRequest,
   TestBoxUseCaseRequest,
 } from "@testboxlab/node-sdk";
+
+configureTestBox({
+  productId: "my-slugified-product-name",
+});
 
 const app = express();
 
