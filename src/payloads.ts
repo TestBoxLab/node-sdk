@@ -3,6 +3,37 @@ import { hasAllKeysInObject, onlyValidKeysInObject } from "./typeHelpers";
 const isString = (x) => typeof x === "string";
 
 /**
+ * The TestBoxAuthenticatedRequest interface is a base class for the other requests
+ */
+export interface ITestBoxAuthenticatedRequest {
+  version: 1;
+  trial_id: string;
+}
+
+export function isTestBoxAuthenticatedRequest(
+  obj: unknown
+): obj is ITestBoxTrialRequest {
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
+
+  const requiredKeys = new Set(["version", "trial_id"]);
+  if (!hasAllKeysInObject(obj, requiredKeys)) {
+    return false;
+  }
+
+  if (obj["version"] !== 1) {
+    // Currently TestBox only has v1 requests
+    return false;
+  }
+
+  // As long as everything else is a string, this should be okay. We can iterate
+  // on this further in the future to verify that trial_id is a guid and that
+  // success_url and failure_url are actually URLs.
+  return isString(obj["trial_id"]);
+}
+
+/**
  * The TestBoxTrialRequest interface is used to parse a request from TestBox
  * for a new trial.
  */

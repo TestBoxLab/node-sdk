@@ -6,14 +6,13 @@ import {
 } from "./payloads";
 import axios from "axios";
 import { TestBoxError } from "./error";
-import { verifyAuthenticationToken } from "./auth";
-import { Request, Response } from "express";
-import { getConfigItem } from "./config";
+import { Request } from "express";
 import TestBoxTrial from "./trial";
+import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
 
 type UseCaseUrls = { [key: string]: string }
 
-export default class TestBoxBulkUseCaseRequest implements ITestBoxBulkUseCaseRequest {
+export default class TestBoxBulkUseCaseRequest extends TestBoxAuthenticatedRequest implements ITestBoxBulkUseCaseRequest {
   version: 1;
   trial_id: string;
   use_case_types: UseCaseType[];
@@ -21,10 +20,9 @@ export default class TestBoxBulkUseCaseRequest implements ITestBoxBulkUseCaseReq
   success_url: string;
   failure_url: string;
 
-  private hasVerifiedAuth: boolean = false;
-  private authToken: string;
-
   constructor(payload: ITestBoxBulkUseCaseRequest) {
+    super(payload)
+
     // The constructor only checks that the contract between the SDK and TestBox
     // is being upheld. It does not check for authorization/authentication,
     // as this is done async.
@@ -52,27 +50,6 @@ export default class TestBoxBulkUseCaseRequest implements ITestBoxBulkUseCaseReq
       req.headers.authorization.replace("Bearer ", "")
     );
     return trialRequest;
-  }
-
-  async verifyToken(authToken: string): Promise<boolean> {
-    const results = await verifyAuthenticationToken(
-      authToken,
-      this.trial_id,
-      getConfigItem("productId")
-    );
-    if (results) {
-      this.hasVerifiedAuth = true;
-      this.authToken = authToken;
-    }
-    return results;
-  }
-
-  throwIfAuthNotValidated() {
-    if (!this.hasVerifiedAuth) {
-      throw new TestBoxError(
-        "You did not verify the JWT of the trial request before fulfilling it."
-      );
-    }
   }
 
   // If creating a trial and ingesting data takes more than a few seconds
