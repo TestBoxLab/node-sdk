@@ -3,9 +3,8 @@ import { ITestBoxUseCaseRequest, UseCaseType } from "../src/payloads";
 import TestBoxUseCaseRequest from "../src/useCaseRequest";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import fs from "fs";
-import path from "path";
 import { configureTestBox } from "../src";
+import { nockJwks } from "./helpers";
 
 const USE_CASE_URL = "https://dumblr.com/mypage";
 
@@ -31,7 +30,7 @@ const USE_CASE_REQUEST_BODY: ITestBoxUseCaseRequest = {
 };
 
 const VALID_JWT_TOKEN =
-  "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlRPTTRycTdySlNNdk5Gang2eEVIVXJScmVqU0lJcC9MZWtVWjhjVXhpaGs5bXh2T1FocGFaK1RQTUs5MkhYZFpvOTdmRzVqTHJUeHJRajFuZkdEVUhRPT0ifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwidHJpYWxfaWQiOiJjMzVkZDkxOS02ZGYzLTQ5Y2EtOTZkMC1kMzBlMTBkYmE0NDIiLCJhdWQiOiJ1bml0LXRlc3QifQ.qXKMeQA5uqPMqiPi5RPvO_Bh38yAP1YzAWwPqt8lvhlLVqb3y8Sk5hQbBnqRJXdOkjGTVuKrAPipBlUTsMtWw5MBILczXhuy_-tElpZQRC5hZhV45IWRizKLlw_EYWh5Yol788xddQBFkCmtvznTpTLjWsh24T8QFXcKO0oU8Fj3HgDY53zNg7Yvway7a_-elBiZ6T5KrktmJ_whORPEEqJOaOQbBtIinYsjF-Mg9Q_spVKNx7psJB8lDm-kcR8diRE4D3hL2_MyznS0HsTlev0a3nj8CkgYrndYETq1liGyKP3MEoPwfoRJQ3jTiktDu458VeESalqVAFqu2I-ulA";
+  "eyJhbGciOiJSUzI1NiJ9.eyJ0cmlhbF9pZCI6ImMzNWRkOTE5LTZkZjMtNDljYS05NmQwLWQzMGUxMGRiYTQ0MiIsImlhdCI6MTY3MTYzNzE3MiwiaXNzIjoidXJuOmV4YW1wbGU6dGVzdGJveCIsImF1ZCI6InVuaXQtdGVzdCIsImV4cCI6MTY3MTY0NDM3Mn0.srwZgbLNrXIDTuXhrjkEAdje2mcyRUhjySEjr3EDssRmR2Z-RVCzBNsjUX8OYsnuykhWdCCieCQSdJSl6gr5c_JlBX3gwI7-Yslnrz_0nhLwRXcsF2cIQO2TGaP3GPiDsx6C2XbZWUXaVA54Dza6yOIgDCy47cD53OzQ_srf0XNvEt4xpAZWWC8luvag6YPIR-GoRmkdGSOYPb44ZWMq1BO3cDzkVj7mrDN7-9IXV5CW_bxO1VvAeLe3STA6t6B0K1NrmjkkoLlpXDaNNQW9UindCIXmFLSiXmSRgiD7NoiJFzVha4cXUA1gPeWlgILScv2WxE-pnKaJKyvHqQusGw";
 const AUDIENCE_CLAIM = "unit-test";
 
 beforeAll(() => {
@@ -60,19 +59,8 @@ describe("test payload parsing", () => {
 
 describe("test JWT checking", () => {
   beforeAll(async () => {
+    await nockJwks();
     const mock = new MockAdapter(axios);
-
-    await new Promise<void>((resolve) => {
-      const filePath = path.dirname(__filename) + "/fixtures/well-known";
-      fs.readFile(filePath, (err, data) => {
-        const contents = data.toString("utf-8");
-        mock
-          .onGet("https://trials.testbox.com/.well-known/keys")
-          .reply(200, contents, { "Content-Type": "application/json" });
-        resolve();
-      });
-    });
-
     mock
       .onPost(
         "https://example.com/success/c35dd919-6df3-49ca-96d0-d30e10dba442"
@@ -104,6 +92,10 @@ describe("test JWT checking", () => {
 });
 
 describe("test Express.js convenience methods", () => {
+  beforeEach(async () => {
+    await nockJwks();
+  });
+
   test("it builds a trial from a request", async () => {
     const expressRequest = getMockReq({
       body: USE_CASE_REQUEST_BODY,

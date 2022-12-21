@@ -43,11 +43,11 @@ export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest i
     if (typeof req.body === "string") {
       payload = JSON.parse(req.body);
     }
-    const trialRequest = new TestBoxUseCaseRequest(payload);
-    await trialRequest.verifyToken(
+    const useCaseRequst = new TestBoxUseCaseRequest(payload);
+    await useCaseRequst.verifyToken(
       req.headers.authorization.replace("Bearer ", "")
     );
-    return trialRequest;
+    return useCaseRequst;
   }
 
   // Convenience method for Express.js users
