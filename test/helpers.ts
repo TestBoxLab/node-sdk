@@ -9,7 +9,7 @@ export const nockJwks = async () => {
       const contents = data.toString("utf-8");
       nock(
         process.env.TBX_JWKS_URL ||
-          "https://partners-well-known.s3.us-west-2.amazonaws.com"
+          "https://dukuoou025q3p.cloudfront.net"
       )
         .get("/.well-known/jwks.json")
         .reply(200, contents, {

@@ -9,7 +9,7 @@ export async function verifyAuthenticationToken(
     const publicKey = jose.createRemoteJWKSet(
       new URL(
         process.env.TBX_JWKS_URL ||
-          "https://partners-well-known.s3.us-west-2.amazonaws.com/.well-known/jwks.json"
+          "https://dukuoou025q3p.cloudfront.net/.well-known/jwks.json"
       )
     );
     const results = await jose.jwtVerify(token, publicKey, {
