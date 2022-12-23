@@ -1,4 +1,5 @@
 import express from "express";
+import bodyParser from "body-parser";
 import {
   configureTestBox,
   TestBoxBulkUseCaseRequest,
@@ -12,6 +13,7 @@ configureTestBox({
 });
 
 const app = express();
+app.use(bodyParser.json())
 
 app.post("/api/testbox/trial", async (req, res) => {
   const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);

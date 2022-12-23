@@ -10,7 +10,10 @@ import TestBoxTrial from "./trial";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
 import { FastifyReply } from "./fastify";
 
-export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest implements ITestBoxUseCaseRequest {
+export default class TestBoxUseCaseRequest
+  extends TestBoxAuthenticatedRequest
+  implements ITestBoxUseCaseRequest
+{
   version: 1;
   trial_id: string;
   use_case_type: UseCaseType;
@@ -19,7 +22,7 @@ export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest i
   failure_url: string;
 
   constructor(payload: ITestBoxUseCaseRequest) {
-    super(payload)
+    super(payload);
 
     // The constructor only checks that the contract between the SDK and TestBox
     // is being upheld. It does not check for authorization/authentication,
@@ -56,7 +59,7 @@ export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest i
   express = {
     fulfill: (useCaseUrl: string, response: Response) => {
       this.throwIfAuthNotValidated();
-      response.status(201).json({ useCaseUrl });
+      response.status(201).json({ [this.use_case_type]: useCaseUrl });
     },
   };
 
@@ -66,7 +69,10 @@ export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest i
   fastify = {
     fulfill: (useCaseUrl: string, reply: FastifyReply) => {
       this.throwIfAuthNotValidated();
-      reply.code(201).header("content-type", "application/json").send({ useCaseUrl });
+      reply
+        .code(201)
+        .header("content-type", "application/json")
+        .send({ [this.use_case_type]: useCaseUrl });
     },
   };
 
@@ -77,12 +83,15 @@ export default class TestBoxUseCaseRequest extends TestBoxAuthenticatedRequest i
     fulfill: (useCaseUrl: string) => {
       this.throwIfAuthNotValidated();
       // @ts-ignore
-      return new Response(JSON.stringify({ useCaseUrl }), {
-        status: 201,
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      return new Response(
+        JSON.stringify({ [this.use_case_type]: useCaseUrl }),
+        {
+          status: 201,
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
     },
   };
 }
