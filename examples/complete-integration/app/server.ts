@@ -5,7 +5,6 @@ import {
   TestBoxBulkUseCaseRequest,
   TestBoxTrial,
   TestBoxTrialRequest,
-  TestBoxUseCaseRequest,
 } from "@testboxlab/node-sdk";
 
 configureTestBox({
@@ -43,33 +42,9 @@ app.post("/api/testbox/trial", async (req, res) => {
   trialRequest.express.fulfill(testboxTrial, res);
 });
 
-// You can use the single use-case call to return a URL
-// for a specific use-case synchronously
-app.post("/api/testbox/use-case", async (req, res) => {
-  const useCaseRequest = new TestBoxUseCaseRequest(req.body);
-
-  const authorization = req.headers["authorization"];
-  if (!authorization) return res.status(401);
-
-  const tokenVerified = await useCaseRequest.verifyToken(authorization);
-  if (!tokenVerified) {
-    // The token verification failed, meaning someone is trying to pretend to be
-    // TestBox! Do not process their request.
-    return res.status(401);
-  }
-
-  // You may now safely retrieve a URL for the requested use case
-  const myUseCaseUrl = "https://mydomain.com.br/some-page";
-
-  // Once we have finished build the URL for the use case, we need
-  // to fulfill the request. For singular use case we always expect
-  // a 201 status code sync response.
-  useCaseRequest.express.fulfill(myUseCaseUrl, res);
-});
-
 // You can use the bulk use-case call to return a URL for
 // multiple use-cases at once asynchronously
-app.post("/api/testbox/use-case/bulk", async (req, res) => {
+app.post("/api/testbox/use-cases/bulk", async (req, res) => {
   const useCaseRequest = new TestBoxBulkUseCaseRequest(req.body);
 
   const authorization = req.headers["authorization"];

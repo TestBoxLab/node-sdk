@@ -296,57 +296,6 @@ export enum UseCaseType {
 }
 
 /**
- * The TestBoxUseCaseRequest interface is used to parse a request from TestBox
- * for a use case url.
- */
-export interface ITestBoxUseCaseRequest {
-  version: 1;
-  trial_id: string;
-  use_case_type: UseCaseType;
-  trial_data: ITestBoxTrial;
-  success_url: string;
-  failure_url: string;
-}
-
-export function isTestBoxUseCaseRequest(
-  obj: unknown
-): obj is ITestBoxUseCaseRequest {
-  if (typeof obj !== "object" || obj === null) {
-    return false;
-  }
-
-  const requiredKeys = new Set([
-    "version",
-    "trial_id",
-    "use_case_type",
-    "trial_data",
-    "success_url",
-    "failure_url",
-  ]);
-
-  if (
-    !hasAllKeysInObject(obj, requiredKeys) ||
-    !onlyValidKeysInObject(obj, requiredKeys)
-  ) {
-    return false;
-  }
-
-  if (obj["version"] !== 1) {
-    // Currently TestBox only has v1 requests
-    return false;
-  }
-
-  // As long as everything else is a string, this should be okay. We can iterate
-  // on this further in the future to verify that trial_id is a guid and that
-  // success_url and failure_url are actually URLs.
-  return (
-    [obj["use_case_type"], obj["success_url"], obj["failure_url"]].every(
-      isString
-    ) && isTestBoxTrial(obj["trial_data"])
-  );
-}
-
-/**
  * The TestBoxBulkUseCaseRequest interface is used to parse a request from TestBox
  * for multiple use case urls.
  */
