@@ -59,7 +59,7 @@ import { TestBoxTrialRequest } from "@testboxlab/node-sdk";
 const app = express();
 
 app.post("/api/testbox/trial", (req, res) => {
-    const trialRequest = TestBoxTrialRequest.fromExpressRequest(req);
+    const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);
 
     // First, call your business logic to create an account/trial
 
@@ -102,7 +102,45 @@ app.post("/api/testbox/trial", async (req, res) => {
     // to fulfill the request. Whenever possible, respond to TestBox synchronously
     // using a 201 HTTP code. 200 HTTP codes will be ignored, as we will assume
     // that you are creating the trial asynchronously.
-    trialRequest.express.fulfill(trial, res);
+    trialRequest.express.fulfill(testboxTrial, res);
+});
+```
+
+## Setup use cases
+
+```typescript
+import { TestBoxBulkUseCaseRequest, TestBoxTrial } from "@testboxlab/node-sdk";
+
+const app = express();
+
+// You can use the bulk use-case call to return a URL for 
+// multiple use-cases at once asynchronously
+app.post("/api/testbox/use-case/bulk", async (req, res) => {
+    const useCaseRequest = new TestBoxBulkUseCaseRequest(req.body);
+    try {
+        const tokenVerified = await useCaseRequest.verifyToken(req.headers["authorization"]);
+        if (!tokenVerified) {
+            // The token verification failed, meaning someone is trying to pretend to be
+            // TestBox! Do not process their request.
+            return res.status(401);
+        }
+
+        // Reply to this call before starting your async things
+        res.status(200).send(); 
+
+        // You may now safely retrieve a URL for the requested use case
+        const result = {}
+        for (const useCaseType of useCaseRequest.types) {
+            result[useCaseType] = myUseCaseUrlRetrieveFunction(useCaseRequest)
+        }
+
+        // Once we have finished build the URL for the use case, we need
+        // to fulfill the request. For bulk use case request, we always expect
+        // a async fulfill that you are creating the trial asynchronously.
+        useCaseRequest.fulfillAsync(result);
+    } catch(e) {
+        useCaseRequest.reportFailureToFulfill(e)
+    }
 });
 ```
 
