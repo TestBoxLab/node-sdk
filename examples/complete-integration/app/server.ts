@@ -44,7 +44,7 @@ app.post("/api/testbox/trial", async (req, res) => {
 
 // You can use the bulk use-case call to return a URL for
 // multiple use-cases at once asynchronously
-app.post("/api/testbox/use-cases/bulk", async (req, res) => {
+app.post("/api/testbox/use-case/bulk", async (req, res) => {
   const useCaseRequest = new TestBoxBulkUseCaseRequest(req.body);
 
   const authorization = req.headers["authorization"];
@@ -57,10 +57,13 @@ app.post("/api/testbox/use-cases/bulk", async (req, res) => {
     return res.status(401);
   }
 
+  // Reply to this call before starting your async things
+  res.status(200).send(); 
+
   try {
     // You may now safely retrieve a URL for the requested use case
     const result: { [key: string]: string } = {};
-    for (const useCaseType in useCaseRequest.use_case_types) {
+    for (const useCaseType of useCaseRequest.use_case_types) {
       result[useCaseType] = "https://mydomain.com.br/some-page";
     }
 
