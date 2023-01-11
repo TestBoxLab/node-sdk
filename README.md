@@ -124,9 +124,6 @@ app.post("/api/testbox/use-cases", async (req, res) => {
         return res.status(401);
     }
 
-    // Reply to this call before starting your async things
-    res.status(200).send(); 
-
     // You may now safely retrieve a URL for the requested use case
     const useCaseType = useCaseRequest.types[0]
     url = myUseCaseUrlRetrieveFunction(useCaseRequest)
