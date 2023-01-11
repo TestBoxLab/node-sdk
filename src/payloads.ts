@@ -296,21 +296,19 @@ export enum UseCaseType {
 }
 
 /**
- * The TestBoxBulkUseCaseRequest interface is used to parse a request from TestBox
+ * The TestBoxUseCaseRequest interface is used to parse a request from TestBox
  * for multiple use case urls.
  */
-export interface ITestBoxBulkUseCaseRequest {
+export interface ITestBoxUseCaseRequest {
   version: 1;
   trial_id: string;
   use_case_types: UseCaseType[];
   trial_data: ITestBoxTrial;
-  success_url: string;
-  failure_url: string;
 }
 
-export function isTestBoxBulkUseCaseRequest(
+export function isTestBoxUseCaseRequest(
   obj: unknown
-): obj is ITestBoxBulkUseCaseRequest {
+): obj is ITestBoxUseCaseRequest {
   if (typeof obj !== "object" || obj === null) {
     return false;
   }
@@ -320,8 +318,6 @@ export function isTestBoxBulkUseCaseRequest(
     "use_case_types",
     "trial_id",
     "trial_data",
-    "success_url",
-    "failure_url",
   ]);
   if (
     !hasAllKeysInObject(obj, requiredKeys) ||
@@ -339,8 +335,6 @@ export function isTestBoxBulkUseCaseRequest(
   // on this further in the future to verify that trial_id is a guid and that
   // success_url and failure_url are actually URLs.
   return (
-    obj["use_case_types"].every(isString) &&
-    [(obj["success_url"], obj["failure_url"])].every(isString) &&
-    isTestBoxTrial(obj["trial_data"])
+    obj["use_case_types"].every(isString) && isTestBoxTrial(obj["trial_data"])
   );
 }

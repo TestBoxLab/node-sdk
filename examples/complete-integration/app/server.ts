@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import {
   configureTestBox,
-  TestBoxBulkUseCaseRequest,
+  TestBoxUseCaseRequest,
   TestBoxTrial,
   TestBoxTrialRequest,
 } from "@testboxlab/node-sdk";
@@ -42,10 +42,9 @@ app.post("/api/testbox/trial", async (req, res) => {
   trialRequest.express.fulfill(testboxTrial, res);
 });
 
-// You can use the bulk use-case call to return a URL for
-// multiple use-cases at once asynchronously
-app.post("/api/testbox/use-case/bulk", async (req, res) => {
-  const useCaseRequest = new TestBoxBulkUseCaseRequest(req.body);
+// You can use the use-case call to return a URL for use-cases
+app.post("/api/testbox/use-cases", async (req, res) => {
+  const useCaseRequest = new TestBoxUseCaseRequest(req.body);
 
   const authorization = req.headers["authorization"];
   if (!authorization) return res.status(401);
@@ -60,20 +59,16 @@ app.post("/api/testbox/use-case/bulk", async (req, res) => {
   // Reply to this call before starting your async things
   res.status(200).send(); 
 
-  try {
-    // You may now safely retrieve a URL for the requested use case
-    const result: { [key: string]: string } = {};
-    for (const useCaseType of useCaseRequest.use_case_types) {
-      result[useCaseType] = "https://mydomain.com.br/some-page";
-    }
+  // You may now safely retrieve a URL for the requested use case
+  const result: { [key: string]: string } = {};
+  const requestedUseCase = useCaseRequest.use_case_types[0]
 
-    // Once we have finished build the URL for the use case, we need
-    // to fulfill the request. For bulk use case request, we always expect
-    // a async fulfill that you are creating the trial asynchronously.
-    useCaseRequest.fulfillAsync(result);
-  } catch (e) {
-    useCaseRequest.reportFailureToFulfill(e);
-  }
+  // Now you make your logic to get the usecase url
+  const url = "https://mydomain.com.br/some-page";
+
+  // Once we have finished build the URL for the use case, we need
+  // to fulfill the request. 
+  useCaseRequest.express.fulfill(requestedUseCase, url, res);
 });
 
 const PORT = 3000;

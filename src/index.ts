@@ -1,15 +1,15 @@
 import TestBoxTrial from "./trial";
 import TestBoxTrialRequest from "./trialRequest";
-import TestBoxBulkUseCaseRequest from "./bulkUseCaseRequest";
+import TestBoxUseCaseRequest from "./useCaseRequest";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
 import { configureTestBox, TestBoxConfig } from "./config";
-import { SecretContext, AdminAuthentication, ITestBoxBulkUseCaseRequest, ITestBoxAuthenticatedRequest } from "./payloads";
+import { SecretContext, AdminAuthentication, ITestBoxUseCaseRequest, ITestBoxAuthenticatedRequest } from "./payloads";
 import { ITestBoxTrial, ITestBoxTrialRequest, User } from "./payloads";
 
 export {
   TestBoxTrial,
   TestBoxTrialRequest,
-  TestBoxBulkUseCaseRequest,
+  TestBoxUseCaseRequest,
   TestBoxAuthenticatedRequest,
   configureTestBox,
   TestBoxConfig,
@@ -17,7 +17,7 @@ export {
   AdminAuthentication,
   ITestBoxTrial,
   ITestBoxTrialRequest,
-  ITestBoxBulkUseCaseRequest,
+  ITestBoxUseCaseRequest,
   ITestBoxAuthenticatedRequest,
   User as TestBoxUser,
 };
