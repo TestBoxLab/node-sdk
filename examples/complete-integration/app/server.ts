@@ -18,13 +18,13 @@ app.post("/api/testbox/trial", async (req, res) => {
   const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);
 
   const authorization = req.headers["authorization"];
-  if (!authorization) return res.status(401);
+  if (!authorization) return res.status(401).send();
 
   const tokenVerified = await trialRequest.verifyToken(authorization);
   if (!tokenVerified) {
     // The token verification failed, meaning someone is trying to pretend to be
     // TestBox! Do not process their request.
-    return res.status(401);
+    return res.status(401).send();
   }
 
   // Once you have provisioned an account, we need to start telling TestBox about it.
@@ -47,13 +47,13 @@ app.post("/api/testbox/use-cases", async (req, res) => {
   const useCaseRequest = new TestBoxUseCaseRequest(req.body);
 
   const authorization = req.headers["authorization"];
-  if (!authorization) return res.status(401);
+  if (!authorization) return res.status(401).send();
 
   const tokenVerified = await useCaseRequest.verifyToken(authorization);
   if (!tokenVerified) {
     // The token verification failed, meaning someone is trying to pretend to be
     // TestBox! Do not process their request.
-    return res.status(401);
+    return res.status(401).send();
   }
 
   // You may now safely retrieve a URL for the requested use case

@@ -82,7 +82,7 @@ app.post("/api/testbox/trial", async (req, res) => {
     if (!tokenVerified) {
         // The token verification failed, meaning someone is trying to pretend to be
         // TestBox! Do not process their request.
-        return res.status(401);
+        return res.status(401).send();
     }
 
     // You may now safely provision an account for TestBox to use. Here is an illustration.
@@ -121,7 +121,7 @@ app.post("/api/testbox/use-cases", async (req, res) => {
     if (!tokenVerified) {
         // The token verification failed, meaning someone is trying to pretend to be
         // TestBox! Do not process their request.
-        return res.status(401);
+        return res.status(401).send();
     }
 
     // You may now safely retrieve a URL for the requested use case
