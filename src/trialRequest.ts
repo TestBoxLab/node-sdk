@@ -5,20 +5,22 @@ import {
 } from "./payloads";
 import axios from "axios";
 import { TestBoxError } from "./error";
-import { verifyAuthenticationToken } from "./auth";
 import { Request, Response } from "express";
-import { getConfigItem } from "./config";
+import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
+import { FastifyReply } from "./fastify";
 
-export default class TestBoxTrialRequest implements ITestBoxTrialRequest {
+export default class TestBoxTrialRequest
+  extends TestBoxAuthenticatedRequest
+  implements ITestBoxTrialRequest
+{
   version: 1;
   trial_id: string;
   success_url: string;
   failure_url: string;
 
-  private hasVerifiedAuth: boolean = false;
-  private authToken: string;
-
   constructor(payload: ITestBoxTrialRequest) {
+    super(payload);
+
     // The constructor only checks that the contract between the SDK and TestBox
     // is being upheld. It does not check for authorization/authentication,
     // as this is done async.
@@ -44,27 +46,6 @@ export default class TestBoxTrialRequest implements ITestBoxTrialRequest {
       req.headers.authorization.replace("Bearer ", "")
     );
     return trialRequest;
-  }
-
-  async verifyToken(authToken: string): Promise<boolean> {
-    const results = await verifyAuthenticationToken(
-      authToken,
-      this.trial_id,
-      getConfigItem("productId")
-    );
-    if (results) {
-      this.hasVerifiedAuth = true;
-      this.authToken = authToken;
-    }
-    return results;
-  }
-
-  throwIfAuthNotValidated() {
-    if (!this.hasVerifiedAuth) {
-      throw new TestBoxError(
-        "You did not verify the JWT of the trial request before fulfilling it."
-      );
-    }
   }
 
   // Convenience method for Express.js users
