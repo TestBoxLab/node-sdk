@@ -90,13 +90,32 @@ app.post("/api/testbox/trial", async (req, res) => {
     myTrial.email = "a-randomly-generated-email@my-domain.com"
     myTrial.subdomain = "tbx-random-sudomain";
     await myTrial.save();
-
+      
     // Once you have provisioned an account, we need to start telling TestBox about it.
-    const testboxTrial = new TestBoxTrial();
-    testboxTrial.setEmail(myTrial.email) // we use the randomly generated email for SSO login
-        .setSubdomain(myTrial.subdomain) // we need the subdomain in order to put users into your applicatio
-        .setApiKey(myTrial.apiKey) // we use API keys to ingest data into a trial
-        .setJwtSecret(myTrial.sso.jwt.secret); // you may use JWT SSO to authenticate our mutual users into your application
+    const testboxTrial = new TestBoxTrial({
+      start_url_context: {
+        subdomain: "tbx-random-sudomain",
+      },
+      secret_context: {
+        sso_jwt_secret: "hello-i-am-a-jwt-secret",
+      },
+      admin_authentication: {
+        user: {
+          email: "a-randomly-generated-email@my-domain.com",
+          password: "somepassword",
+        },
+        api_token: "some-api-key-in-here",
+      },
+      created_at: new Date(),
+      trial_users: [],
+    });
+
+    // Or, you can use the helper functions
+    testboxTrial
+      .setEmail("a-randomly-generated-email@my-domain.com") // we use the randomly generated email for SSO login
+      .setSubdomain("tbx-random-sudomain") // we need the subdomain in order to put users into your applicatio
+      .setApiKey("some-api-key-in-here") // we use API keys to ingest data into a trial
+      .setJwtSecret("hello-i-am-a-jwt-secret"); // you may use JWT SSO to authenticate our mutual users into your application
 
     // Once we have finished populating the details of our trial, we need
     // to fulfill the request. Whenever possible, respond to TestBox synchronously

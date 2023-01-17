@@ -28,7 +28,25 @@ app.post("/api/testbox/trial", async (req, res) => {
   }
 
   // Once you have provisioned an account, we need to start telling TestBox about it.
-  const testboxTrial = new TestBoxTrial();
+  const testboxTrial = new TestBoxTrial({
+    start_url_context: {
+      subdomain: "tbx-random-sudomain",
+    },
+    secret_context: {
+      sso_jwt_secret: "hello-i-am-a-jwt-secret",
+    },
+    admin_authentication: {
+      user: {
+        email: "a-randomly-generated-email@my-domain.com",
+        password: "somepassword",
+      },
+      api_token: "some-api-key-in-here",
+    },
+    created_at: new Date(),
+    trial_users: [],
+  });
+
+  // Or, you can use the helper functions
   testboxTrial
     .setEmail("a-randomly-generated-email@my-domain.com") // we use the randomly generated email for SSO login
     .setSubdomain("tbx-random-sudomain") // we need the subdomain in order to put users into your applicatio
