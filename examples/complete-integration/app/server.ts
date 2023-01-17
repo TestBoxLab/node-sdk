@@ -5,23 +5,23 @@ import {
   TestBoxUseCaseRequest,
   TestBoxTrial,
   TestBoxTrialRequest,
+  TestboxConfigFramework,
 } from "@testboxlab/node-sdk";
 
 configureTestBox({
   productId: "my-slugified-product-name",
+  framework: TestboxConfigFramework.EXPRESS,
 });
 
 const app = express();
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.post("/api/testbox/trial", async (req, res) => {
   const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);
 
-  const authorization = req.headers["authorization"];
-  if (!authorization) return res.status(401).send();
-
-  const tokenVerified = await trialRequest.verifyToken(authorization);
-  if (!tokenVerified) {
+  try {
+    trialRequest.throwIfAuthNotValidated();
+  } catch (error) {
     // The token verification failed, meaning someone is trying to pretend to be
     // TestBox! Do not process their request.
     return res.status(401).send();
@@ -44,27 +44,20 @@ app.post("/api/testbox/trial", async (req, res) => {
 
 // You can use the use-case call to return a URL for use-cases
 app.post("/api/testbox/use-cases", async (req, res) => {
-  const useCaseRequest = new TestBoxUseCaseRequest(req.body);
+  const useCaseRequest = await TestBoxUseCaseRequest.fromExpressRequest(req);
 
-  const authorization = req.headers["authorization"];
-  if (!authorization) return res.status(401).send();
-
-  const tokenVerified = await useCaseRequest.verifyToken(authorization);
-  if (!tokenVerified) {
+  try {
+    useCaseRequest.throwIfAuthNotValidated();
+  } catch (error) {
     // The token verification failed, meaning someone is trying to pretend to be
     // TestBox! Do not process their request.
     return res.status(401).send();
   }
 
-  // You may now safely retrieve a URL for the requested use case
-  const requestedUseCase = useCaseRequest.use_case_types[0]
-
-  // Now you make your logic to get the usecase url
-  const url = "https://mydomain.com.br/some-page";
-
-  // Once we have finished build the URL for the use case, we need
-  // to fulfill the request. 
-  useCaseRequest.express.fulfill(requestedUseCase, url, res);
+  await useCaseRequest.processUseCases(res, async (useCaseType) => {
+    // You may now safely retrieve a URL for the requested use case
+    return "https://mydomain.com.br/some-page";
+  });
 });
 
 const PORT = 3000;

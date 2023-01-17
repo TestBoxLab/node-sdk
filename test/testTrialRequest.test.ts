@@ -57,7 +57,7 @@ describe("test JWT checking", () => {
       )
       .reply(201);
   });
-  
+
   beforeEach(async () => {
     await nockJwks();
   });

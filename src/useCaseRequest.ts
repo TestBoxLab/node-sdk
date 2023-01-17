@@ -9,6 +9,7 @@ import { Request, Response } from "express";
 import TestBoxTrial from "./trial";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
 import { FastifyReply } from "./fastify";
+import { TestboxConfigFramework, getConfigItem } from "./config";
 
 type UseCaseUrls = { [key: string]: string };
 export default class TestBoxUseCaseRequest
@@ -50,10 +51,30 @@ export default class TestBoxUseCaseRequest
     return trialRequest;
   }
 
+  async processUseCases(
+    res: Response | FastifyReply,
+    handler: (useCaseType: string) => Promise<string>
+  ) {
+    for (const useCaseType of this.use_case_types) {
+      const url = await handler(useCaseType);
+
+      const framework = getConfigItem("framework");
+      if (framework == TestboxConfigFramework.EXPRESS) {
+        this.express.fulfill(useCaseType, url, res as Response);
+      } else if (framework == TestboxConfigFramework.FASTIFY) {
+        this.fastify.fulfill(useCaseType, url, res as FastifyReply);
+      } else {
+        throw new TestBoxError(
+          `processUseCases is not supported for framework "${framework}"`
+        );
+      }
+    }
+  }
+
   // Convenience method for Express.js users
   // You can respond directly to our webhook request with a 200
   // response instead of initiating an HTTP callback.
-  express = {
+  private express = {
     fulfill: (useCaseType: string, url: string, response: Response) => {
       this.throwIfAuthNotValidated();
       response.status(200).json({ [useCaseType]: url } as UseCaseUrls);
@@ -63,7 +84,7 @@ export default class TestBoxUseCaseRequest
   // Convenience method for Fastify users
   // You can respond directly to our webhook request with a 200
   // response instead of initiating an HTTP callback.
-  fastify = {
+  private fastify = {
     fulfill: (useCaseType: string, url: string, reply: FastifyReply) => {
       this.throwIfAuthNotValidated();
       reply

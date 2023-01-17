@@ -6,6 +6,7 @@ import MockAdapter from "axios-mock-adapter";
 import TestBoxTrial from "../src/trial";
 import { configureTestBox } from "../src";
 import { nockJwks } from "./helpers";
+import { TestboxConfigFramework } from "../src/config";
 
 const basicTrial = new TestBoxTrial().setEmail("hello@world.com");
 const USE_CASE_URL = "https://dumblr.com/mypage";
@@ -29,6 +30,7 @@ const AUDIENCE_CLAIM = "unit-test";
 beforeAll(() => {
   configureTestBox({
     productId: AUDIENCE_CLAIM,
+    framework: TestboxConfigFramework.EXPRESS,
   });
 });
 
@@ -70,10 +72,9 @@ describe("test JWT checking", () => {
     expect(results).toBeTruthy();
 
     await expect(
-      request.express.fulfill(
-        UseCaseType.CUSTOMER_SUPPORT_CANNED_RESPONSES,
-        USE_CASE_URL,
-        getMockRes().res
+      request.processUseCases(
+        getMockRes().res,
+        async (useCaseType) => USE_CASE_URL
       )
     ).resolves.not.toThrowError();
   });
@@ -86,10 +87,9 @@ describe("test JWT checking", () => {
     expect(results).toBeFalsy();
 
     await expect(
-      request.express.fulfill(
-        UseCaseType.CUSTOMER_SUPPORT_CANNED_RESPONSES,
-        USE_CASE_URL,
-        getMockRes().res
+      request.processUseCases(
+        getMockRes().res,
+        async (useCaseType) => USE_CASE_URL
       )
     ).rejects.toThrowError();
   });
@@ -100,7 +100,7 @@ describe("test Express.js convenience methods", () => {
     await nockJwks();
   });
 
-  test("it builds a trial from a request", async () => {
+  test("it builds a use case from a request", async () => {
     const expressRequest = getMockReq({
       body: USE_CASE_REQUEST_BODY,
       headers: {
@@ -112,10 +112,9 @@ describe("test Express.js convenience methods", () => {
       expressRequest
     );
     await expect(
-      useCaseRequest.express.fulfill(
-        UseCaseType.CUSTOMER_SUPPORT_CANNED_RESPONSES,
-        USE_CASE_URL,
-        getMockRes().res
+      useCaseRequest.processUseCases(
+        getMockRes().res,
+        async (useCaseType) => USE_CASE_URL
       )
     ).resolves.not.toThrowError();
   });

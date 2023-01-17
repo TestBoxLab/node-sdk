@@ -9,14 +9,17 @@ import { Request, Response } from "express";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
 import { FastifyReply } from "./fastify";
 
-export default class TestBoxTrialRequest extends TestBoxAuthenticatedRequest implements ITestBoxTrialRequest {
+export default class TestBoxTrialRequest
+  extends TestBoxAuthenticatedRequest
+  implements ITestBoxTrialRequest
+{
   version: 1;
   trial_id: string;
   success_url: string;
   failure_url: string;
 
   constructor(payload: ITestBoxTrialRequest) {
-    super(payload)
+    super(payload);
 
     // The constructor only checks that the contract between the SDK and TestBox
     // is being upheld. It does not check for authorization/authentication,

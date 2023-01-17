@@ -58,7 +58,7 @@ import { TestBoxTrialRequest } from "@testboxlab/node-sdk";
 
 const app = express();
 
-app.post("/api/testbox/trial", (req, res) => {
+app.post("/api/testbox/trial", async (req, res) => {
     const trialRequest = await TestBoxTrialRequest.fromExpressRequest(req);
 
     // First, call your business logic to create an account/trial
@@ -116,20 +116,20 @@ const app = express();
 // You can use the use-case call to return a URL for 
 // the requested use-cases
 app.post("/api/testbox/use-cases", async (req, res) => {
-    const useCaseRequest = new TestBoxUseCaseRequest(req.body);
-    const tokenVerified = await useCaseRequest.verifyToken(req.headers["authorization"]);
-    if (!tokenVerified) {
-        // The token verification failed, meaning someone is trying to pretend to be
-        // TestBox! Do not process their request.
-        return res.status(401).send();
-    }
+  const useCaseRequest = await TestBoxUseCaseRequest.fromExpressRequest(req);
 
+  try {
+    useCaseRequest.throwIfAuthNotValidated();
+  } catch (error) {
+    // The token verification failed, meaning someone is trying to pretend to be
+    // TestBox! Do not process their request.
+    return res.status(401).send();
+  }
+
+  await useCaseRequest.processUseCases(res, async (useCaseType) => {
     // You may now safely retrieve a URL for the requested use case
-    const useCaseType = useCaseRequest.types[0]
-    url = myUseCaseUrlRetrieveFunction(useCaseRequest)
-    // Once we have finished build the URL for the use case, we need
-    // to fulfill the request. 
-    useCaseRequest.express.fulfill(useCaseType, url, res);
+    return "https://mydomain.com.br/some-page";
+  });
 });
 ```
 

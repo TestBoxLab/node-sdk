@@ -7,10 +7,7 @@ export const nockJwks = async () => {
     const filePath = path.dirname(__filename) + "/fixtures/jwks";
     fs.readFile(filePath, (err, data) => {
       const contents = data.toString("utf-8");
-      nock(
-        process.env.TBX_JWKS_URL ||
-          "https://dukuoou025q3p.cloudfront.net"
-      )
+      nock(process.env.TBX_JWKS_URL || "https://assets.testbox.com")
         .get("/.well-known/jwks.json")
         .reply(200, contents, {
           "Content-Type": "application/json",

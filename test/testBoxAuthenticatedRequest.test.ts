@@ -1,6 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { nockJwks } from './helpers';
+import { nockJwks } from "./helpers";
 import {
   configureTestBox,
   ITestBoxAuthenticatedRequest,
@@ -31,15 +31,16 @@ describe("test JWT checking", () => {
       )
       .reply(201);
   });
-  
+
   beforeEach(async () => {
-    await nockJwks()
-  })
+    await nockJwks();
+  });
 
   test("a valid JWT", async () => {
     const request = new TestBoxAuthenticatedRequest(REQUEST_BODY);
     const results = await request.verifyToken(VALID_JWT_TOKEN);
     expect(results).toBeTruthy();
+    expect(() => request.throwIfAuthNotValidated()).not.toThrowError();
   });
 
   test("a JWT that tries to be sneaky and change the audience", async () => {
@@ -48,5 +49,6 @@ describe("test JWT checking", () => {
       "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlRPTTRycTdySlNNdk5Gang2eEVIVXJScmVqU0lJcC9MZWtVWjhjVXhpaGs5bXh2T1FocGFaK1RQTUs5MkhYZFpvOTdmRzVqTHJUeHJRajFuZkdEVUhRPT0ifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwidHJpYWxfaWQiOiJjMzVkZDkxOS02ZGYzLTQ5Y2EtOTZkMC1kMzBlMTBkYmE0NDIiLCJhdWQiOiJ1bml0LXRlc3QtYnJva2VuIn0.F3-i0vXNUq4uDBX3YgSswiBSbqByPR0KxSrwuTBYdA1t8EWfPyFMXpxplIsXxCe26OrizIUoReuxKM_aAk9FTtWAuVmXYBKrSei77KpW2Vsp71SjglPgFFY6Wj_1BkTp2C1Z3iAjVBpfJOw5R0hNp18BrLBcg-iZ4XZL6LGUR2YHWPK2MqLDg6Yant_ZP_gIzPcW16UEleJFTGlbfh3Jsl47dQwisuWwiCUJb-7XO8bEQY6SFKZul36NQ4wU9qHnOiG27oEUwBR9LdXuqbJc3C3RLoPlDLS4SKjxAfp0SkejjuRqxPqFmSVJF9YbhrB_8gNwqWIEEffS2gUoIU3e4w";
     const results = await request.verifyToken(jwtToken);
     expect(results).toBeFalsy();
+    expect(() => request.throwIfAuthNotValidated()).toThrowError();
   });
 });

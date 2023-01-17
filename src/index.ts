@@ -2,8 +2,17 @@ import TestBoxTrial from "./trial";
 import TestBoxTrialRequest from "./trialRequest";
 import TestBoxUseCaseRequest from "./useCaseRequest";
 import TestBoxAuthenticatedRequest from "./testBoxAuthenticatedRequest";
-import { configureTestBox, TestBoxConfig } from "./config";
-import { SecretContext, AdminAuthentication, ITestBoxUseCaseRequest, ITestBoxAuthenticatedRequest } from "./payloads";
+import {
+  configureTestBox,
+  TestBoxConfig,
+  TestboxConfigFramework,
+} from "./config";
+import {
+  SecretContext,
+  AdminAuthentication,
+  ITestBoxUseCaseRequest,
+  ITestBoxAuthenticatedRequest,
+} from "./payloads";
 import { ITestBoxTrial, ITestBoxTrialRequest, User } from "./payloads";
 
 export {
@@ -13,6 +22,7 @@ export {
   TestBoxAuthenticatedRequest,
   configureTestBox,
   TestBoxConfig,
+  TestboxConfigFramework,
   SecretContext,
   AdminAuthentication,
   ITestBoxTrial,
