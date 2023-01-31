@@ -1,27 +1,35 @@
+import {ITestBoxTrial} from "./payloads";
+import {Request, Response} from "express";
+import TestBoxTrialRequest from "./trialRequest";
+
 export enum TestboxConfigFramework {
-  EXPRESS = "express",
-  FASTIFY = "fastify",
-}
-export interface TestBoxConfig {
-  productId: string;
-  framework?: TestboxConfigFramework;
+    EXPRESS = "express",
+    FASTIFY = "fastify",
 }
 
-let _testboxConfig = undefined;
+export interface TestBoxConfig {
+    productId?: string;
+    framework?: TestboxConfigFramework;
+}
+
+export interface FrameworkDefinition {
+    fulfill: (
+        trial: ITestBoxTrial,
+        resp?: Response
+    ) => Response | undefined;
+    fromRequest: (req: Request) => TestBoxTrialRequest;
+}
+
+const _testboxConfig: TestBoxConfig = {};
 
 export function configureTestBox(config: TestBoxConfig) {
-  _testboxConfig = {
-    framework: TestboxConfigFramework.EXPRESS,
-    ...config,
-  };
+    _testboxConfig.framework = config.framework || TestboxConfigFramework.EXPRESS
+    _testboxConfig.productId = config.productId;
 }
 
 export function getConfigItem<K extends keyof TestBoxConfig>(
-  key: K,
-  fallback?: TestBoxConfig[K]
+    key: K,
+    fallback?: TestBoxConfig[K]
 ): TestBoxConfig[K] {
-  if (_testboxConfig) {
     return _testboxConfig[key] || fallback;
-  }
-  return fallback;
 }
